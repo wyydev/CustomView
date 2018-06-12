@@ -17,8 +17,8 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
 /**
- * 贝塞尔曲线画爱心
- * <p>
+ * 贝塞尔曲线画弹性圆
+ *
  * Created by wen on 2018/6/5.
  */
 

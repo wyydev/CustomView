@@ -21,17 +21,17 @@ public class MainActivity extends AppCompatActivity {
 
         //showBezier2();
 
-        showBezier4();
+//        showBezier4();
     }
 
-    private void showBezier4() {
-        final Bezier4 bezier = findViewById(R.id.bezier);
-        Button btnStart = findViewById(R.id.btn_start);
-        btnStart.setOnClickListener((view) -> {
-            bezier.reset();
-            bezier.move();
-        });
-    }
+//    private void showBezier4() {
+//        final Bezier4 bezier = findViewById(R.id.bezier);
+//        Button btnStart = findViewById(R.id.btn_start);
+//        btnStart.setOnClickListener((view) -> {
+//            bezier.reset();
+//            bezier.move();
+//        });
+//    }
 
 
 //    private void showBezier2() {
