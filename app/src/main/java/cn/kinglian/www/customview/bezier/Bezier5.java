@@ -1,5 +1,8 @@
 package cn.kinglian.www.customview.bezier;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -7,8 +10,10 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 
 /**
  * 贝塞尔曲线画弹性的圆
@@ -32,10 +37,6 @@ public class Bezier5 extends ViewGroup {
 
     private int mHeight;
 
-    private int mCenterX;
-
-    private int mCenterY;
-
     private int tabNum = 0;
 
     /**
@@ -47,23 +48,33 @@ public class Bezier5 extends ViewGroup {
 
     private int mStartY;
 
-    private float mInterpolatedTime;
+    private float mInterpolatedTime = 0;
 
     private float mRadius;
 
     /**
      * 当前选中position
      */
-    private int mCurrentPosition;
+    private int mCurrentPosition = 0;
 
     /**
-     * 顺时针记录 ，x相同的点
+     * 下一个进入的位置
      */
-    private XPoint p1, p3;
+    private int toPosition = 1;
+
+    /**
+     * 移动的距离
+     */
+    private float distance;
+
     /**
      * 顺时针记录 ，y相同的点
      */
-    private YPoint p2, p4;
+    private YPoint p1, p3;
+    /**
+     * 顺时针记录 ，x相同的点
+     */
+    private XPoint p2, p4;
 
     public Bezier5(Context context) {
         this(context, null);
@@ -91,11 +102,17 @@ public class Bezier5 extends ViewGroup {
 
         if (mCurrentPosition == 0) {
             mc = C * mRadius;
-            p1 = new XPoint(0, mRadius, mc);
-            p3 = new XPoint(0, -mRadius, mc);
-            p2 = new YPoint(mRadius, 0, mc);
-            p4 = new YPoint(-mRadius, 0, mc);
+            p1 = new YPoint(0, -mRadius, mc);
+            p3 = new YPoint(0, mRadius, mc);
+            p2 = new XPoint(mRadius, 0, mc);
+            p4 = new XPoint(-mRadius, 0, mc);
         }
+
+        mc = C * mRadius;
+        p1 = new YPoint(mCurrentPosition * (space + 2 * mRadius), -mRadius, mc);
+        p3 = new YPoint(mCurrentPosition * (space + 2 * mRadius), mRadius, mc);
+        p2 = new XPoint(mRadius + mCurrentPosition * (space + 2 * mRadius), 0, mc);
+        p4 = new XPoint(-mRadius + mCurrentPosition * (space + 2 * mRadius), 0, mc);
 
     }
 
@@ -138,6 +155,41 @@ public class Bezier5 extends ViewGroup {
         setMeasuredDimension(widthSize, height);
     }
 
+    ValueAnimator valueAnimator;
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (valueAnimator == null) {
+            valueAnimator = ValueAnimator.ofFloat(0, 1);
+            valueAnimator.setDuration(1500);
+            valueAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+            valueAnimator.addUpdateListener((animation) -> {
+                mInterpolatedTime = (float) animation.getAnimatedValue();
+                postInvalidate();
+
+            });
+
+            valueAnimator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    distance = (toPosition - mCurrentPosition) * (2 * mRadius + space) + (toPosition > mCurrentPosition ? -mRadius : mRadius);
+                    super.onAnimationStart(animation);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    resetP();
+                    postInvalidate();
+                    super.onAnimationEnd(animation);
+                }
+            });
+        }
+        if (valueAnimator.isRunning()) {
+            valueAnimator.cancel();
+        }
+        valueAnimator.start();
+        return super.onTouchEvent(event);
+    }
 
     private float scale = 0.8f;
     private double g2 = 1.41421;
@@ -158,15 +210,104 @@ public class Bezier5 extends ViewGroup {
 
     @Override
     protected void dispatchDraw(Canvas canvas) {
-        super.dispatchDraw(canvas);
         canvas.save();
         mPath.reset();
         tabNum = getChildCount();
         for (int i = 0; i < tabNum; i++) {
             canvas.drawCircle(space + mRadius + i * (space + 2 * mRadius), mStartY, mRadius, mCirclePaint);
         }
+        canvas.translate(mStartX, mStartY);
+
+        if (mInterpolatedTime > 0 && mInterpolatedTime <= 0.2) {
+            //0-0.2时间内，向右p2的x由mRadius变为2*mRadius,向左，p4的x由-mRadius变为-2mRadius
+            if (toPosition > mCurrentPosition) {
+                p2.setX(mRadius + 5 * mInterpolatedTime * mRadius);
+            } else {
+                p4.setX(-mRadius - 5 * mInterpolatedTime * mRadius);
+            }
+        } else if (mInterpolatedTime > 0.2 && mInterpolatedTime <= 0.5) {
+            //0.2-0.5时间内p2的x保持不动，p4的x由-mRadius到-2*mRadius利用位移移动至下一个位置,mc增大0.25
+            //(mInterpolatedTime-0.2)/0.3 获取0-1的值
+            canvas.translate((mInterpolatedTime - 0.2f) * distance / 0.5f, 0);
+
+            if (toPosition > mCurrentPosition) {
+                p2.setX(2 * mRadius);
+                p4.setX((float) (-mRadius - (mInterpolatedTime - 0.2) / 0.3 * mRadius));
+            } else {
+                p4.setX(-2 * mRadius);
+                p2.setX((float) (mRadius + (mInterpolatedTime - 0.2) / 0.3 * mRadius));
+            }
+
+            p2.setMc((float) (mc + 0.25 * (mInterpolatedTime - 0.2) / 0.3));
+            p4.setMc((float) (mc + 0.25 * (mInterpolatedTime - 0.2) / 0.3));
+
+        } else if (mInterpolatedTime > 0.5 && mInterpolatedTime <= 0.8) {
+            //0.5-0.8时间内p2的x由2*mRadius变为mRadius，p4的x由-2*mRadius变为-mRadius，mc减少0.25恢复原值
+            canvas.translate((mInterpolatedTime - 0.2f) * distance / 0.5f, 0);
+            if (toPosition > mCurrentPosition) {
+                p2.setX((float) (2 * mRadius - (mInterpolatedTime - 0.5) / 0.3 * mRadius));
+                p4.setX((float) (-2 * mRadius + (mInterpolatedTime - 0.5) / 0.3 * mRadius));
+            } else {
+                p4.setX((float) (-2 * mRadius + (mInterpolatedTime - 0.5) / 0.3 * mRadius));
+                p2.setX((float) (2 * mRadius - (mInterpolatedTime - 0.5) / 0.3 * mRadius));
+            }
+            p2.setMc((float) (1.25f * mc - 0.25 * (mInterpolatedTime - 0.2) / 0.3));
+            p4.setMc((float) (1.25 * mc - 0.25 * (mInterpolatedTime - 0.2) / 0.3));
+        } else if (mInterpolatedTime > 0.8 && mInterpolatedTime <= 0.9) {
+            //0.8-0.9时间内p4的x由-mRadius变为-mRadius+0.25*mRadius，回弹超出效果
+            canvas.translate((mInterpolatedTime - 0.2f) * distance / 0.5f, 0);
+            p2.setMc(mc);
+            p4.setMc(mc);
+            if (toPosition > mCurrentPosition) {
+                p4.setX((float) (-mRadius + 0.25 * (mInterpolatedTime - 0.8) / 0.1 * mRadius));
+            } else {
+                p2.setX((float) (mRadius - 0.25 * (mInterpolatedTime - 0.8) / 0.1 * mRadius));
+            }
+        } else if (mInterpolatedTime > 0.9 && mInterpolatedTime <= 1) {
+            //回弹超出效果恢复
+            p2.setMc(mc);
+            p4.setMc(mc);
+            if (toPosition > mCurrentPosition) {
+                canvas.translate(mRadius + distance, 0);
+                p4.setX((float) (-0.75 * mRadius - 0.25 * (mInterpolatedTime - 0.9) / 0.1 * mRadius));
+            } else {
+                canvas.translate(-mRadius + distance, 0);
+                p2.setX((float) (0.75 * mRadius + 0.25 * (mInterpolatedTime - 0.9) / 0.1 * mRadius));
+            }
+        }
+
+        mPath.moveTo(p1.x, p1.y);
+        mPath.cubicTo(p1.rightPoint.x, p1.rightPoint.y, p2.topPoint.x, p2.topPoint.y, p2.x, p2.y);
+        mPath.cubicTo(p2.bottomPoint.x, p2.bottomPoint.y, p3.rightPoint.x, p3.rightPoint.y, p3.x, p3.y);
+        mPath.cubicTo(p3.leftPoint.x, p3.leftPoint.y, p4.bottomPoint.x, p4.bottomPoint.y, p4.x, p4.y);
+        mPath.cubicTo(p4.topPoint.x, p4.topPoint.y, p1.leftPoint.x, p1.leftPoint.y, p1.x, p1.y);
+        canvas.drawPath(mPath, mPaint);
+        canvas.restore();
+        super.dispatchDraw(canvas);
+    }
 
 
+    private void resetP() {
+        p1.setY(-mRadius);
+        p1.setX(0);
+        p1.setMc(mc);
+
+        p3.setY(mRadius);
+        p3.setX(0);
+        p3.setMc(mc);
+
+        p2.setY(0);
+        p2.setX(mRadius);
+        p2.setMc(mc);
+
+        p4.setY(0);
+        p4.setX(-mRadius);
+        p4.setMc(mc);
+    }
+
+
+    private void moveTo(int currentPosition, int toPosition) {
+        distance = (toPosition - this.mCurrentPosition) * (2 * mRadius + space) + (toPosition > currentPosition ? -mRadius : mRadius);
     }
 
     /**
@@ -175,9 +316,9 @@ public class Bezier5 extends ViewGroup {
     private void init() {
         mPath = new Path();
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mPaint.setColor(Color.RED);
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(2);
+        mPaint.setColor(Color.parseColor("#44ff2222"));
+        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setStrokeWidth(1);
 
         mCirclePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mCirclePaint.setColor(Color.parseColor("#FFFFB9"));
