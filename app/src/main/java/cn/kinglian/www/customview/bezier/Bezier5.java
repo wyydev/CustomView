@@ -161,7 +161,7 @@ public class Bezier5 extends ViewGroup {
     public boolean onTouchEvent(MotionEvent event) {
         if (valueAnimator == null) {
             valueAnimator = ValueAnimator.ofFloat(0, 1);
-            valueAnimator.setDuration(1500);
+            valueAnimator.setDuration(5000);
             valueAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
             valueAnimator.addUpdateListener((animation) -> {
                 mInterpolatedTime = (float) animation.getAnimatedValue();
@@ -216,49 +216,68 @@ public class Bezier5 extends ViewGroup {
         for (int i = 0; i < tabNum; i++) {
             canvas.drawCircle(space + mRadius + i * (space + 2 * mRadius), mStartY, mRadius, mCirclePaint);
         }
-        canvas.translate(mStartX, mStartY);
+        canvas.translate(mStartX+mCurrentPosition * (2 * mRadius + space), mStartY);
 
         if (mInterpolatedTime > 0 && mInterpolatedTime <= 0.2) {
             //0-0.2时间内，向右p2的x由mRadius变为2*mRadius,向左，p4的x由-mRadius变为-2mRadius
             if (toPosition > mCurrentPosition) {
+                //右边先变大
                 p2.setX(mRadius + 5 * mInterpolatedTime * mRadius);
             } else {
                 p4.setX(-mRadius - 5 * mInterpolatedTime * mRadius);
             }
-        } else if (mInterpolatedTime > 0.2 && mInterpolatedTime <= 0.5) {
-            //0.2-0.5时间内p2的x保持不动，p4的x由-mRadius到-2*mRadius利用位移移动至下一个位置,mc增大0.25
-            //(mInterpolatedTime-0.2)/0.3 获取0-1的值
-            canvas.translate((mInterpolatedTime - 0.2f) * distance / 0.5f, 0);
 
+        } else if (mInterpolatedTime > 0.2 && mInterpolatedTime <= 0.4) {
+            //0.2-0.4时间内p2的x保持不动，p4的x由-mRadius到-2*mRadius利用位移移动至下一个位置,mc增大0.25
+            //(mInterpolatedTime-0.2)/0.3 获取0-1的值
+            canvas.translate((float) ((mInterpolatedTime - 0.2f) * 0.5*distance / 0.4f), 0);
             if (toPosition > mCurrentPosition) {
-                p2.setX(2 * mRadius);
-                p4.setX((float) (-mRadius - (mInterpolatedTime - 0.2) / 0.3 * mRadius));
+                //左边变大并且移动
+                p4.setX((float) (-mRadius - (mInterpolatedTime - 0.2) / 0.4 * mRadius));
+                p2.setMc((float) (mc + 0.25 * (mInterpolatedTime - 0.2) / 0.4));
+//                p4.setMc(mc);
+            } else {
+                p4.setX(-2 * mRadius);
+                p2.setX((float) (mRadius + (mInterpolatedTime - 0.2) / 0.4 * mRadius));
+            }
+
+
+        } else if (mInterpolatedTime > 0.4 && mInterpolatedTime <= 0.6) {
+            canvas.translate((float) ((mInterpolatedTime - 0.2f) * (distance-(0.5*distance)) / 0.4f), 0);
+            if (toPosition > mCurrentPosition) {
+                //右边恢复
+//                p4.setX(-2 * mRadius);
+                p2.setX((float) (2 * mRadius - (mInterpolatedTime - 0.4) / 0.6 * mRadius));
+//                p2.setMc((float) (1.25f * mc - 0.25 * (mInterpolatedTime - 0.4) / 0.6));
+                p4.setMc((float) (mc +0.25 * (mInterpolatedTime - 0.4) / 0.6));
             } else {
                 p4.setX(-2 * mRadius);
                 p2.setX((float) (mRadius + (mInterpolatedTime - 0.2) / 0.3 * mRadius));
             }
 
-            p2.setMc((float) (mc + 0.25 * (mInterpolatedTime - 0.2) / 0.3));
-            p4.setMc((float) (mc + 0.25 * (mInterpolatedTime - 0.2) / 0.3));
-
-        } else if (mInterpolatedTime > 0.5 && mInterpolatedTime <= 0.8) {
+        } else if (mInterpolatedTime > 0.6 && mInterpolatedTime <= 0.8) {
             //0.5-0.8时间内p2的x由2*mRadius变为mRadius，p4的x由-2*mRadius变为-mRadius，mc减少0.25恢复原值
-            canvas.translate((mInterpolatedTime - 0.2f) * distance / 0.5f, 0);
+//            canvas.translate((mInterpolatedTime - 0.2f) * distance / 0.5f, 0);
+            canvas.translate(((mInterpolatedTime - 0.2f) * distance / 0.4f), 0);
             if (toPosition > mCurrentPosition) {
-                p2.setX((float) (2 * mRadius - (mInterpolatedTime - 0.5) / 0.3 * mRadius));
-                p4.setX((float) (-2 * mRadius + (mInterpolatedTime - 0.5) / 0.3 * mRadius));
+                //左边恢复
+//                p2.setX(mRadius);
+                p4.setX((float) (-2 * mRadius + (mInterpolatedTime - 0.6) / 0.8 * mRadius));
+                p2.setMc((float) (1.25f * mc - 0.25 * (mInterpolatedTime - 0.6) / 0.8));
+                p4.setMc((float) (1.25 * mc - 0.25 * (mInterpolatedTime - 0.6) / 0.8));
             } else {
                 p4.setX((float) (-2 * mRadius + (mInterpolatedTime - 0.5) / 0.3 * mRadius));
                 p2.setX((float) (2 * mRadius - (mInterpolatedTime - 0.5) / 0.3 * mRadius));
             }
-            p2.setMc((float) (1.25f * mc - 0.25 * (mInterpolatedTime - 0.2) / 0.3));
-            p4.setMc((float) (1.25 * mc - 0.25 * (mInterpolatedTime - 0.2) / 0.3));
+
         } else if (mInterpolatedTime > 0.8 && mInterpolatedTime <= 0.9) {
             //0.8-0.9时间内p4的x由-mRadius变为-mRadius+0.25*mRadius，回弹超出效果
-            canvas.translate((mInterpolatedTime - 0.2f) * distance / 0.5f, 0);
+            canvas.translate((mInterpolatedTime - 0.2f) * distance / 0.4f, 0);
             p2.setMc(mc);
             p4.setMc(mc);
             if (toPosition > mCurrentPosition) {
+                //左边往右凹陷
+                p2.setX(mRadius);
                 p4.setX((float) (-mRadius + 0.25 * (mInterpolatedTime - 0.8) / 0.1 * mRadius));
             } else {
                 p2.setX((float) (mRadius - 0.25 * (mInterpolatedTime - 0.8) / 0.1 * mRadius));
@@ -269,6 +288,7 @@ public class Bezier5 extends ViewGroup {
             p4.setMc(mc);
             if (toPosition > mCurrentPosition) {
                 canvas.translate(mRadius + distance, 0);
+                p2.setX(mRadius);
                 p4.setX((float) (-0.75 * mRadius - 0.25 * (mInterpolatedTime - 0.9) / 0.1 * mRadius));
             } else {
                 canvas.translate(-mRadius + distance, 0);
