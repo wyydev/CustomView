@@ -75,9 +75,6 @@ public class PayResultView extends View {
         initAnimator();
         initHandler();
 
-        //开始动画
-        mCurrentStatus = Status.PAYING;
-        startingAnimator.start();
     }
 
     private void initPaint() {
@@ -181,6 +178,15 @@ public class PayResultView extends View {
                 }
             }
         };
+    }
+
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        //开始动画
+        mCurrentStatus = Status.PAYING;
+        startingAnimator.start();
     }
 
     @Override

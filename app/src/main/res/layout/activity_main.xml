@@ -4,123 +4,136 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/darker_gray"
     tools:context="cn.kinglian.www.customview.MainActivity">
 
 
-    <cn.kinglian.www.customview.pathmeasure.PayResultView
-        android:id="@+id/pay_result_view"
+    <cn.kinglian.www.customview.CounterView
+        android:id="@+id/ptp_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
-
-
-
-    <Button
-        android:id="@+id/btn_start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:text="开始支付"/>
-
-    <Button
-        android:id="@+id/btn_finish"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@+id/btn_start"
-        android:text="支付结果"/>
+        app:layout_constraintTop_toTopOf="parent"/>
 
 
-
-    <RadioGroup
-        android:id="@+id/rg_control"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/btn_start"
-        android:orientation="horizontal">
-
-        <RadioButton
-            android:id="@+id/rb_one"
+    <!--pathMeasure-->
+    <!--    <cn.kinglian.www.customview.pathmeasure.PayResultView
+            android:id="@+id/pay_result_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="成功"/>
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
 
-        <RadioButton
-            android:id="@+id/rb_two"
+
+
+        <Button
+            android:id="@+id/btn_start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:text="失败"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="开始支付"/>
 
-        <RadioButton
-            android:id="@+id/rb_three"
+        <Button
+            android:id="@+id/btn_finish"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:text="警告"/>
-    </RadioGroup>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/btn_start"
+            android:text="支付结果"/>
 
+
+
+        <RadioGroup
+            android:id="@+id/rg_control"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/btn_start"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rb_one"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="成功"/>
+
+            <RadioButton
+                android:id="@+id/rb_two"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:text="失败"/>
+
+            <RadioButton
+                android:id="@+id/rb_three"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:text="警告"/>
+        </RadioGroup>-->
+    <!--pathMeasure-->
+
+    <!--贝塞尔5-->
     <!--<cn.kinglian.www.customview.bezier.Bezier5-->
-        <!--android:id="@+id/bezier"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="80dp"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintRight_toRightOf="parent">-->
+    <!--android:id="@+id/bezier"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="80dp"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintLeft_toLeftOf="parent"-->
+    <!--app:layout_constraintRight_toRightOf="parent">-->
 
-        <!--<ImageView-->
-            <!--android:layout_width="50dp"-->
-            <!--android:layout_height="50dp"-->
-            <!--android:src="@drawable/camera" />-->
+    <!--<ImageView-->
+    <!--android:layout_width="50dp"-->
+    <!--android:layout_height="50dp"-->
+    <!--android:src="@drawable/camera" />-->
 
-        <!--<ImageView-->
-            <!--android:layout_width="50dp"-->
-            <!--android:layout_height="50dp"-->
-            <!--android:src="@drawable/video" />-->
+    <!--<ImageView-->
+    <!--android:layout_width="50dp"-->
+    <!--android:layout_height="50dp"-->
+    <!--android:src="@drawable/video" />-->
 
-        <!--<ImageView-->
-            <!--android:layout_width="50dp"-->
-            <!--android:layout_height="50dp"-->
-            <!--android:src="@drawable/notice" />-->
+    <!--<ImageView-->
+    <!--android:layout_width="50dp"-->
+    <!--android:layout_height="50dp"-->
+    <!--android:src="@drawable/notice" />-->
 
-        <!--<ImageView-->
-            <!--android:layout_width="50dp"-->
-            <!--android:layout_height="50dp"-->
-            <!--android:src="@drawable/msg" />-->
+    <!--<ImageView-->
+    <!--android:layout_width="50dp"-->
+    <!--android:layout_height="50dp"-->
+    <!--android:src="@drawable/msg" />-->
 
     <!--</cn.kinglian.www.customview.bezier.Bezier5>-->
-       <!-- app:layout_constraintTop_toTopOf="parent"-->
+    <!-- app:layout_constraintTop_toTopOf="parent"-->
+    <!--贝塞尔5-->
 
 
-  <!--  <Button
-        android:id="@+id/btn_start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="开始"/>
+    <!--  <Button
+          android:id="@+id/btn_start"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="开始"/>
 
-    <RadioGroup
-        android:id="@+id/rg_control"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:visibility="gone"
-        android:orientation="horizontal">
+      <RadioGroup
+          android:id="@+id/rg_control"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          app:layout_constraintBottom_toBottomOf="parent"
+          android:visibility="gone"
+          android:orientation="horizontal">
 
-        <RadioButton
-            android:id="@+id/rb_one"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="控制点1"/>
+          <RadioButton
+              android:id="@+id/rb_one"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="控制点1"/>
 
-        <RadioButton
-            android:id="@+id/rb_two"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:text="控制点2"/>
-    </RadioGroup>-->
+          <RadioButton
+              android:id="@+id/rb_two"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginLeft="50dp"
+              android:text="控制点2"/>
+      </RadioGroup>-->
 
 </android.support.constraint.ConstraintLayout>
