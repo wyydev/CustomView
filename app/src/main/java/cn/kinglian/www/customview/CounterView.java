@@ -29,6 +29,8 @@ public class CounterView extends View {
     private float mTipsSize = 20;
     private float mValueSize = 35;
 
+    private static String sString;
+
     private ValueAnimator.AnimatorUpdateListener updateListener;
     private ValueAnimator animator;
     private int duration = 1500;
@@ -72,6 +74,7 @@ public class CounterView extends View {
 
 
     private void init() {
+
         mArcPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mArcPaint.setStyle(Paint.Style.STROKE);
         mArcPaint.setStrokeCap(Paint.Cap.ROUND);

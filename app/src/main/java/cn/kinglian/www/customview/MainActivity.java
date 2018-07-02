@@ -69,30 +69,5 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
 
-    public static final String PRINTER_ID = "print_id";
-    public static final String USER_ID = "user_id";
-    public static final String PRINTER_PARAM = "print_param";
 
-    /**
-     * @param printerId 打印机id
-     * @param userId 用户id
-     * @param printParam 打印参数
-     * @return 使用该Intent启动
-     */
-    public static Intent startAActivity(int printerId,int userId,PrintParam printParam){
-        Intent intent = new Intent();
-        intent.putExtra(PRINTER_ID,printerId);
-        intent.putExtra(USER_ID,userId);
-        intent.putExtra(PRINTER_PARAM,printParam);
-        return intent;
-    }
-
-    class PrintParam implements Serializable{
-
-    }
-
-    @Override
-    protected void onResumeFragments() {
-        super.onResumeFragments();
-    }
 }
